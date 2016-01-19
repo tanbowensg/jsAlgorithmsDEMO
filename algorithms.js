@@ -1,39 +1,104 @@
-var List = function(l ,min, max, isInt) {
-    var array = [];
-    var i;
-    for (i = 0; i < l; i++) {
-        if (isInt) {
-            array[i] = parseInt(Math.random() * (max-min)) + min
-        } else {
-            array[i] = Math.random() * (max-min) + min
+$(function() {
+    sorting.generateArray(20, 20, 100, true)
+    sorting.generateBalls(100, 100)
+    sorting.array.selectionSort()
+    console.log("procedures", sorting.procedures)
+    Velocity.mock = 1
+})
+
+var sorting = Sorting()
+
+function Sorting(argument) {
+    var obj = {}
+
+    obj.procedures = []
+
+    obj.generateArray = function(l, min, max, isInt) {
+        var array = []
+        var i;
+        for (i = 0; i < l; i++) {
+            if (isInt) {
+                array[i] = parseInt(Math.random() * (max - min)) + min
+            } else {
+                array[i] = Math.random() * (max - min) + min
+            }
+        }
+        obj.array = array
+    }
+
+    obj.generateBalls = function(max, d) {
+        for (var i = 0; i < obj.array.length; i++) {
+            var diameter = obj.array[i] / max * d
+            $("<div></div>").addClass("ball")
+                .html(i)
+                .css({
+                    width: diameter + "px",
+                    height: diameter + "px",
+                    top: (d - diameter) / 2 + "px",
+                    "border-radius": diameter / 2 + "px",
+                    "background-color": "red"
+                })
+                .appendTo($("<div class='ball-box'></div>")
+                    .css({
+                        left: 100 * i + "px",
+                    })
+                    .appendTo($("#animate"))
+                )
         }
     }
-    return array
+
+    obj.exchangeBalls = function(a, b) {
+        var $a = $($(".ball-box")[a])
+        var $b = $($(".ball-box")[b])
+        console.log(a, $a.css('left'))
+        console.log(b, $b.css('left'))
+        Velocity($a, {
+            left: $b.css('left')
+        })
+        Velocity($b, {
+            left: $a.css('left')
+        })
+    }
+
+    obj.perform = function(step) {
+        var a = obj.procedures[step][0]
+        var b = obj.procedures[step][1]
+        console.log(a, b)
+        var $a = $($(".ball-box")[a])
+        var $b = $($(".ball-box")[b])
+
+        if (a === b) {
+            console.log("same")
+            nextStep()
+            return
+        }
+
+        console.log(a, $a.css('left'))
+        console.log(b, $b.css('left'))
+        Velocity($a, {
+            left: $b.css('left')
+        })
+        Velocity($b, {
+            left: $a.css('left')
+        }, {
+            complete: nextStep
+        })
+
+        function nextStep() {
+            step++
+            if (step < obj.procedures.length) { //这里的回调和数组顺序有问题，是正常的反向，所以导致下面要用shift
+                obj.perform(step)
+            }
+        }
+    }
+
+    obj.start = function() {
+        obj.perform(0)
+    }
+
+    return obj
 }
 
-var theArray = List(20, 20, 100, true)
-
-
-function generateBalls(array, max, d) {
-    for (var i = 0; i < array.length; i++) {
-        var diameter = array[i] / max * d
-        $("<div></div>").addClass("ball")
-            .html(i)
-            .css({
-                width:diameter+"px",
-                height:diameter+"px",
-                top:(d-diameter)/2+"px",
-                "border-radius":diameter/2+"px",
-                "background-color":"red"
-            })
-            .appendTo($("<div class='ball-box'></div>")
-                .css({
-                    left:100*i+"px",
-                })
-                .appendTo($("#animate"))
-            )
-    };
-}
 
 // function exchangeBalls(a, b) {
 //     var $balls = $(".ball-box")
@@ -84,74 +149,6 @@ function generateBalls(array, max, d) {
 //         path: new $.path.bezier(bezierB)
 //     })
 // }
-var exchRecords=[]
-
-// function exchangeBalls(a,b,callback){
-//     var $a = $($(".ball-box")[a])
-//     var $b = $($(".ball-box")[b])
-//     console.log(a,$a.css('left'))
-//     console.log(b,$b.css('left'))
-//     Velocity($a,{left:$b.css('left')})
-//     Velocity($b,{left:$a.css('left')},{
-//         finish:function(a,b){
-//             callback(a,b)
-//         }
-//     })
-// }
-// 
-
-function performRecords (records,i){
-
-    var a=(records[i][0])
-    var b=(records[i][1])
-    console.log(a,b)
-
-    function exchangeBalls(a,b){
-
-        if(a===b){
-            console.log("same")
-            i++
-            if(i<records.length){
-                performRecords(records,i)
-            }
-            return 
-        }
-
-        var $a = $($(".ball-box")[a])
-        var $b = $($(".ball-box")[b])
-        console.log(a,$a.css('left'))
-        console.log(b,$b.css('left'))
-        Velocity($a,{left:$b.css('left')})
-        Velocity($b,{left:$a.css('left')},{
-            complete:function(){
-                i++
-                if(i<records.length){//这里的回调和数组顺序有问题，是正常的反向，所以导致下面要用shift
-                    performRecords(records,i)
-                }
-            }
-        })
-    }
-    exchangeBalls(a,b)
-
-}
-
-$(function(){
-    // theArray=[23,55,6,84,32]
-    generateBalls(theArray,100,100)
-    theArray.selectionSort()
-    console.log(exchRecords)
-    Velocity.mock=1
-})
-
-function exchangeBalls2(a,b){
-
-    var $a = $($(".ball-box")[a])
-    var $b = $($(".ball-box")[b])
-    console.log(a,$a.css('left'))
-    console.log(b,$b.css('left'))
-    Velocity($a,{left:$b.css('left')})
-    Velocity($b,{left:$a.css('left')})
-}
 
 
 function less(a, b) {
@@ -166,7 +163,7 @@ function exch(a, i, j) {
     var t = a[i]
     a[i] = a[j]
     a[j] = t
-    exchRecords.unshift([i,j])
+    sorting.procedures.unshift([i, j])
 }
 
 function virtualize(a, point) {
@@ -221,21 +218,19 @@ function getBiggest(a) {
     return max
 }
 
-howLongDoseItTake = function(func, obj) {
+function howLongDoseItTake(func, obj) {
     var startTime, endTime
 
     var d1 = new Date()
     startTime = d1.getTime();
 
-    func.apply(obj,obj)
+    func.apply(obj, obj)
 
     var d2 = new Date()
     endTime = d2.getTime();
 
     console.log('总共花费' + (endTime - startTime) / 1000 + '秒')
 }
-
-
 Array.prototype.insertationSort = function() {
     var compare = 0
     var exchange = 0

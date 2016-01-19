@@ -1,0 +1,34 @@
+.colDiv{
+	width: 600px;
+	height:150px;
+	margin: 10px;
+	position: relative;
+}
+.col{
+	position: absolute;
+	bottom: 0px;
+	margin:0px 2px 0px 2px;
+}
+#container{
+	width:600px;
+	height:150px
+}
+
+#animate {
+	height:100px;
+	position: relative;
+}
+
+.ball-box {
+	height: 100px;
+	width: 100px;
+	display: inline-block;
+	text-align: center;
+	position: absolute;
+}
+
+.ball {
+	display: inline-block;
+	vertical-align: middle;
+	position: relative;
+}

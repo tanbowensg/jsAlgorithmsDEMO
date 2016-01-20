@@ -1,34 +1,34 @@
 $(function() {
-    sorting.generateArray(20, 20, 100, true)
-    sorting.generateBalls(100, 100)
-    sorting.array.selectionSort()
+    var theArray = generateArray(20, 20, 100, true)
+    var sorting = Sorting(theArray)
     console.log("procedures", sorting.procedures)
     Velocity.mock = 1
 })
 
-var sorting = Sorting()
+var sorting={}
+sorting.procedures=[]
 
-function Sorting(argument) {
+function generateArray (l, min, max, isInt) {
+    var array = []
+    var i;
+    for (i = 0; i < l; i++) {
+        if (isInt) {
+            array[i] = parseInt(Math.random() * (max - min)) + min
+        } else {
+            array[i] = Math.random() * (max - min) + min
+        }
+    }
+    return array
+}
+
+function Sorting(array) {
     var obj = {}
 
     obj.procedures = []
 
-    obj.generateArray = function(l, min, max, isInt) {
-        var array = []
-        var i;
-        for (i = 0; i < l; i++) {
-            if (isInt) {
-                array[i] = parseInt(Math.random() * (max - min)) + min
-            } else {
-                array[i] = Math.random() * (max - min) + min
-            }
-        }
-        obj.array = array
-    }
-
     obj.generateBalls = function(max, d) {
-        for (var i = 0; i < obj.array.length; i++) {
-            var diameter = obj.array[i] / max * d
+        for (var i = 0; i < array.length; i++) {
+            var diameter = array[i] / max * d
             $("<div></div>").addClass("ball")
                 .html(i)
                 .css({
@@ -95,6 +95,13 @@ function Sorting(argument) {
     obj.start = function() {
         obj.perform(0)
     }
+
+    obj.init = function(){
+        obj.generateBalls(100,100)
+        array.selectionSort()
+    }
+
+    obj.init()
 
     return obj
 }

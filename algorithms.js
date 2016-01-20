@@ -71,7 +71,6 @@ var Sorting = function (array) {
                     width: "20px",
                     height: diameter + "px",
                     top: (d - diameter) + "px",
-                    "background-color": "red"
                 })
                 .appendTo($("<div class='ball-box'></div>")
                     .css({
@@ -85,7 +84,6 @@ var Sorting = function (array) {
                 //     height: diameter + "px",
                 //     top: (d - diameter) / 2 + "px",
                 //     "border-radius": diameter / 2 + "px",
-                //     "background-color": "red"
                 // })
                 // .appendTo($("<div class='ball-box'></div>")
                 //     .css({
@@ -246,7 +244,7 @@ function exch(a, i, j) {
     a.procedures.unshift({
         a:i,
         b:j,
-        type:"exch"
+        type:"exch",
     })
 }
 

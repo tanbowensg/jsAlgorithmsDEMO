@@ -31,4 +31,9 @@
 	display: inline-block;
 	vertical-align: middle;
 	position: relative;
+	background: red;
+}
+
+.ball-box.settled .ball{
+	background: blue;
 }

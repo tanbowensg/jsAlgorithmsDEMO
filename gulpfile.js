@@ -2,7 +2,7 @@ var gulp=require("gulp")
 var concat=require("gulp-concat")
 
 gulp.task("build", function() {
-    return gulp.src(["./src/js/sort/lib.js","./src/js/sort/*.js"])
+    return gulp.src(["./src/js/sort/*.js","./src/js/sort/lib.js"])
 	    .pipe(concat("algorithms.js"))
 	    .pipe(gulp.dest("./"))
 })

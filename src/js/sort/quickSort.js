@@ -1,16 +1,16 @@
 Array.prototype.quickSort=function(){
-
+  this.procedures=[]
   /**
    * Swaps two values in the heap
    *
    * @param {int} indexA Index of the first item to be swapped
    * @param {int} indexB Index of the second item to be swapped
    */
-  function swap(array, indexA, indexB) {
-    var temp = array[indexA];
-    array[indexA] = array[indexB];
-    array[indexB] = temp;
-  }
+  // function swap(array, indexA, indexB) {
+  //   var temp = array[indexA];
+  //   array[indexA] = array[indexB];
+  //   array[indexB] = temp;
+  // }
 
   /**
    * Partitions the (sub)array into values less than and greater
@@ -27,7 +27,7 @@ Array.prototype.quickSort=function(){
         pivotValue = array[pivot];
 
     // put the pivot on the right
-    swap(array, pivot, right);
+    exch(array, pivot, right);
 
     // go through the rest
     for(var v = left; v < right; v++) {
@@ -36,13 +36,13 @@ Array.prototype.quickSort=function(){
       // value put it to the left of the pivot
       // point and move the pivot point along one
       if(array[v] < pivotValue) {
-        swap(array, v, storeIndex);
+        exch(array, v, storeIndex);
         storeIndex++;
       }
     }
 
     // finally put the pivot in the correct place
-    swap(array, right, storeIndex);
+    exch(array, right, storeIndex);
 
     return storeIndex;
   }

@@ -1,14 +1,25 @@
-$(function() {
-    var theArray = generateArray(20, 20, 100, true)
-    var sorting = Sorting(theArray)
-    console.log("procedures", sorting.procedures)
-    Velocity.mock = 1
+$(function(){
+    // theArray = generateArray(20, 20, 100, true)
+    theArray = [34,24,54,37,87,3,45,45,85,56,34,45,9,44,53,57,73,56,45,32,73,57,38,73,87,23,99,9,43]
+    quickSorting = Sorting(theArray)
+    quickSorting.array.quickSort()
+    theArray = [34,24,54,37,87,3,45,45,85,56,34,45,9,44,53,57,73,56,45,32,73,57,38,73,87,23,99,9,43]
+    selectSorting = Sorting(theArray)
+    selectSorting.array.selectionSort()
+
+    // var QuickSorting=Sorting(theArray)
+    // theArray.shellSort()
+    // var shellSorting=Sorting(theArray)
+    // theArray.insertationSort()
+    // var insertationSorting=Sorting(theArray)
+    // theArray.selectionSort()
+    // var selectionSorting=Sorting(theArray)
+    Velocity.mock = 0.3
 })
 
-var sorting={}
-sorting.procedures=[]
+var quickSorting,selectSorting
 
-function generateArray (l, min, max, isInt) {
+var generateArray = function(l, min, max, isInt) {
     var array = []
     var i;
     for (i = 0; i < l; i++) {
@@ -21,35 +32,51 @@ function generateArray (l, min, max, isInt) {
     return array
 }
 
-function Sorting(array) {
+var Sorting = function (array) {
     var obj = {}
 
-    obj.procedures = []
+    obj.array=array
+
+    obj.container = $("<div></div>").addClass("animate").appendTo(document.body)
 
     obj.generateBalls = function(max, d) {
-        for (var i = 0; i < array.length; i++) {
-            var diameter = array[i] / max * d
+        for (var i = 0; i < obj.array.length; i++) {
+            var diameter = obj.array[i] / max * d
             $("<div></div>").addClass("ball")
                 .html(i)
+                //方条
                 .css({
-                    width: diameter + "px",
+                    width: "20px",
                     height: diameter + "px",
-                    top: (d - diameter) / 2 + "px",
-                    "border-radius": diameter / 2 + "px",
+                    top: (d - diameter) + "px",
                     "background-color": "red"
                 })
                 .appendTo($("<div class='ball-box'></div>")
                     .css({
-                        left: 100 * i + "px",
+                        left: 20 * i + "px",
                     })
-                    .appendTo($("#animate"))
+                    .appendTo(obj.container)
                 )
+                //圆形
+                // .css({
+                //     width: diameter + "px",
+                //     height: diameter + "px",
+                //     top: (d - diameter) / 2 + "px",
+                //     "border-radius": diameter / 2 + "px",
+                //     "background-color": "red"
+                // })
+                // .appendTo($("<div class='ball-box'></div>")
+                //     .css({
+                //         left: 100 * i + "px",
+                //     })
+                //     .appendTo(obj.container)
+                // )
         }
     }
 
     obj.exchangeBalls = function(a, b) {
-        var $a = $($(".ball-box")[a])
-        var $b = $($(".ball-box")[b])
+        var $a = $(obj.container.find(".ball-box")[a])
+        var $b = $(obj.container.find(".ball-box")[b])
         console.log(a, $a.css('left'))
         console.log(b, $b.css('left'))
         Velocity($a, {
@@ -61,11 +88,15 @@ function Sorting(array) {
     }
 
     obj.perform = function(step) {
-        var a = obj.procedures[step][0]
-        var b = obj.procedures[step][1]
+        var a = obj.array.procedures[step].a
+        var b = obj.array.procedures[step].b
+        var type = obj.array.procedures[step].type
+        var $a = $(obj.container.find(".ball-box")[a])
+        var $b = $(obj.container.find(".ball-box")[b])
+
         console.log(a, b)
-        var $a = $($(".ball-box")[a])
-        var $b = $($(".ball-box")[b])
+        console.log(a, $a.css('left'))
+        console.log(b, $b.css('left'))
 
         if (a === b) {
             console.log("same")
@@ -73,20 +104,37 @@ function Sorting(array) {
             return
         }
 
-        console.log(a, $a.css('left'))
-        console.log(b, $b.css('left'))
-        Velocity($a, {
-            left: $b.css('left')
-        })
-        Velocity($b, {
-            left: $a.css('left')
-        }, {
-            complete: nextStep
-        })
+        if (type==="exch") {
+            //元素交换
+            Velocity($a, {
+                left: $b.css('left')
+            })
+            Velocity($b, {
+                left: $a.css('left')
+            }, {
+                complete: nextStep
+            })
+
+        } else if (type==="compare"){
+            //元素比较
+            Velocity($a, {
+                top: "-=10px"
+            }, {
+                duration:100,
+                loop:1,
+            })
+
+            Velocity($b, {
+                top: "-=10px"
+            }, {
+                duration:100,
+                complete: nextStep
+            })
+        }
 
         function nextStep() {
             step++
-            if (step < obj.procedures.length) { //这里的回调和数组顺序有问题，是正常的反向，所以导致下面要用shift
+            if (step < obj.array.procedures.length) { //这里的回调和数组顺序有问题，是正常的反向，所以导致下面要用shift
                 obj.perform(step)
             }
         }
@@ -98,11 +146,9 @@ function Sorting(array) {
 
     obj.init = function(){
         obj.generateBalls(100,100)
-        array.selectionSort()
     }
 
     obj.init()
-
     return obj
 }
 
@@ -158,8 +204,13 @@ function Sorting(array) {
 // }
 
 
-function less(a, b) {
-    if (a < b) {
+function less(a, i, j) {
+    // sorting.procedures.unshift({
+    //     a:i,
+    //     b:j,
+    //     type:"compare"
+    // })
+    if (a[i] < a[j]) {
         return true
     } else {
         return false
@@ -170,7 +221,11 @@ function exch(a, i, j) {
     var t = a[i]
     a[i] = a[j]
     a[j] = t
-    sorting.procedures.unshift([i, j])
+    a.procedures.unshift({
+        a:i,
+        b:j,
+        type:"exch"
+    })
 }
 
 function virtualize(a, point) {

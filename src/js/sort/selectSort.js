@@ -1,4 +1,5 @@
 Array.prototype.selectionSort = function() {
+    this.procedures=[]
     var compare = 0
     var exchange = 0
     var comparet = this.length * (this.length - 1) / 2
@@ -8,7 +9,7 @@ Array.prototype.selectionSort = function() {
         var min = i
         for (var j = i + 1; j < this.length; j++) {
             compare++
-            if (less(this[j], this[min])) {
+            if (less(this, j, min)) {
                 min = j
             }
         }

@@ -1,14 +1,47 @@
-$(function() {
-    var theArray = generateArray(20, 20, 100, true)
-    var sorting = Sorting(theArray)
-    console.log("procedures", sorting.procedures)
-    Velocity.mock = 1
+Array.prototype.insertationSort = function() {
+    this.procedures=[]
+    var compare = 0
+    var exchange = 0
+    var comparet = this.length * this.length / 4
+    var exchanget = comparet
+    for (var i = 1; i < this.length; i++) {
+        for (var j = i; j > 0; j--) {
+            compare++
+            if (less(this, j, j - 1)) {
+                exch(this, j, j - 1)
+                exchange++
+            } else {
+                break
+            }
+        }
+        // virtualize(this, i)
+    }
+    console.log(this)
+    console.log('理论上应进行约' + comparet + '次比较和' + exchanget + '次交换')
+    console.log('实际上进行了共' + compare + '次比较和' + exchange + '次交换')
+}
+$(function(){
+    // theArray = generateArray(20, 20, 100, true)
+    theArray = [34,24,54,37,87,3,45,45,85,56,34,45,9,44,53,57,73,56,45,32,73,57,38,73,87,23,99,9,43]
+    quickSorting = Sorting(theArray)
+    quickSorting.array.quickSort()
+    theArray = [34,24,54,37,87,3,45,45,85,56,34,45,9,44,53,57,73,56,45,32,73,57,38,73,87,23,99,9,43]
+    selectSorting = Sorting(theArray)
+    selectSorting.array.selectionSort()
+
+    // var QuickSorting=Sorting(theArray)
+    // theArray.shellSort()
+    // var shellSorting=Sorting(theArray)
+    // theArray.insertationSort()
+    // var insertationSorting=Sorting(theArray)
+    // theArray.selectionSort()
+    // var selectionSorting=Sorting(theArray)
+    Velocity.mock = 0.3
 })
 
-var sorting={}
-sorting.procedures=[]
+var quickSorting,selectSorting
 
-function generateArray (l, min, max, isInt) {
+var generateArray = function(l, min, max, isInt) {
     var array = []
     var i;
     for (i = 0; i < l; i++) {
@@ -21,35 +54,51 @@ function generateArray (l, min, max, isInt) {
     return array
 }
 
-function Sorting(array) {
+var Sorting = function (array) {
     var obj = {}
 
-    obj.procedures = []
+    obj.array=array
+
+    obj.container = $("<div></div>").addClass("animate").appendTo(document.body)
 
     obj.generateBalls = function(max, d) {
-        for (var i = 0; i < array.length; i++) {
-            var diameter = array[i] / max * d
+        for (var i = 0; i < obj.array.length; i++) {
+            var diameter = obj.array[i] / max * d
             $("<div></div>").addClass("ball")
                 .html(i)
+                //方条
                 .css({
-                    width: diameter + "px",
+                    width: "20px",
                     height: diameter + "px",
-                    top: (d - diameter) / 2 + "px",
-                    "border-radius": diameter / 2 + "px",
+                    top: (d - diameter) + "px",
                     "background-color": "red"
                 })
                 .appendTo($("<div class='ball-box'></div>")
                     .css({
-                        left: 100 * i + "px",
+                        left: 20 * i + "px",
                     })
-                    .appendTo($("#animate"))
+                    .appendTo(obj.container)
                 )
+                //圆形
+                // .css({
+                //     width: diameter + "px",
+                //     height: diameter + "px",
+                //     top: (d - diameter) / 2 + "px",
+                //     "border-radius": diameter / 2 + "px",
+                //     "background-color": "red"
+                // })
+                // .appendTo($("<div class='ball-box'></div>")
+                //     .css({
+                //         left: 100 * i + "px",
+                //     })
+                //     .appendTo(obj.container)
+                // )
         }
     }
 
     obj.exchangeBalls = function(a, b) {
-        var $a = $($(".ball-box")[a])
-        var $b = $($(".ball-box")[b])
+        var $a = $(obj.container.find(".ball-box")[a])
+        var $b = $(obj.container.find(".ball-box")[b])
         console.log(a, $a.css('left'))
         console.log(b, $b.css('left'))
         Velocity($a, {
@@ -61,11 +110,15 @@ function Sorting(array) {
     }
 
     obj.perform = function(step) {
-        var a = obj.procedures[step][0]
-        var b = obj.procedures[step][1]
+        var a = obj.array.procedures[step].a
+        var b = obj.array.procedures[step].b
+        var type = obj.array.procedures[step].type
+        var $a = $(obj.container.find(".ball-box")[a])
+        var $b = $(obj.container.find(".ball-box")[b])
+
         console.log(a, b)
-        var $a = $($(".ball-box")[a])
-        var $b = $($(".ball-box")[b])
+        console.log(a, $a.css('left'))
+        console.log(b, $b.css('left'))
 
         if (a === b) {
             console.log("same")
@@ -73,20 +126,37 @@ function Sorting(array) {
             return
         }
 
-        console.log(a, $a.css('left'))
-        console.log(b, $b.css('left'))
-        Velocity($a, {
-            left: $b.css('left')
-        })
-        Velocity($b, {
-            left: $a.css('left')
-        }, {
-            complete: nextStep
-        })
+        if (type==="exch") {
+            //元素交换
+            Velocity($a, {
+                left: $b.css('left')
+            })
+            Velocity($b, {
+                left: $a.css('left')
+            }, {
+                complete: nextStep
+            })
+
+        } else if (type==="compare"){
+            //元素比较
+            Velocity($a, {
+                top: "-=10px"
+            }, {
+                duration:100,
+                loop:1,
+            })
+
+            Velocity($b, {
+                top: "-=10px"
+            }, {
+                duration:100,
+                complete: nextStep
+            })
+        }
 
         function nextStep() {
             step++
-            if (step < obj.procedures.length) { //这里的回调和数组顺序有问题，是正常的反向，所以导致下面要用shift
+            if (step < obj.array.procedures.length) { //这里的回调和数组顺序有问题，是正常的反向，所以导致下面要用shift
                 obj.perform(step)
             }
         }
@@ -98,11 +168,9 @@ function Sorting(array) {
 
     obj.init = function(){
         obj.generateBalls(100,100)
-        array.selectionSort()
     }
 
     obj.init()
-
     return obj
 }
 
@@ -158,8 +226,13 @@ function Sorting(array) {
 // }
 
 
-function less(a, b) {
-    if (a < b) {
+function less(a, i, j) {
+    // sorting.procedures.unshift({
+    //     a:i,
+    //     b:j,
+    //     type:"compare"
+    // })
+    if (a[i] < a[j]) {
         return true
     } else {
         return false
@@ -170,7 +243,11 @@ function exch(a, i, j) {
     var t = a[i]
     a[i] = a[j]
     a[j] = t
-    sorting.procedures.unshift([i, j])
+    a.procedures.unshift({
+        a:i,
+        b:j,
+        type:"exch"
+    })
 }
 
 function virtualize(a, point) {
@@ -237,27 +314,6 @@ function howLongDoseItTake(func, obj) {
     endTime = d2.getTime();
 
     console.log('总共花费' + (endTime - startTime) / 1000 + '秒')
-}
-Array.prototype.insertationSort = function() {
-    var compare = 0
-    var exchange = 0
-    var comparet = this.length * this.length / 4
-    var exchanget = comparet
-    for (var i = 1; i < this.length; i++) {
-        for (var j = i; j > 0; j--) {
-            compare++
-            if (less(this[j], this[j - 1])) {
-                exch(this, j, j - 1)
-                exchange++
-            } else {
-                break
-            }
-        }
-        // virtualize(this, i)
-    }
-    console.log(this)
-    console.log('理论上应进行约' + comparet + '次比较和' + exchanget + '次交换')
-    console.log('实际上进行了共' + compare + '次比较和' + exchange + '次交换')
 }
 Array.prototype.mergeSort = function() {
 
@@ -355,18 +411,18 @@ Array.prototype.mergeSort = function() {
 //     console.log(this)
 // }
 Array.prototype.quickSort=function(){
-
+  this.procedures=[]
   /**
    * Swaps two values in the heap
    *
    * @param {int} indexA Index of the first item to be swapped
    * @param {int} indexB Index of the second item to be swapped
    */
-  function swap(array, indexA, indexB) {
-    var temp = array[indexA];
-    array[indexA] = array[indexB];
-    array[indexB] = temp;
-  }
+  // function swap(array, indexA, indexB) {
+  //   var temp = array[indexA];
+  //   array[indexA] = array[indexB];
+  //   array[indexB] = temp;
+  // }
 
   /**
    * Partitions the (sub)array into values less than and greater
@@ -383,7 +439,7 @@ Array.prototype.quickSort=function(){
         pivotValue = array[pivot];
 
     // put the pivot on the right
-    swap(array, pivot, right);
+    exch(array, pivot, right);
 
     // go through the rest
     for(var v = left; v < right; v++) {
@@ -392,13 +448,13 @@ Array.prototype.quickSort=function(){
       // value put it to the left of the pivot
       // point and move the pivot point along one
       if(array[v] < pivotValue) {
-        swap(array, v, storeIndex);
+        exch(array, v, storeIndex);
         storeIndex++;
       }
     }
 
     // finally put the pivot in the correct place
-    swap(array, right, storeIndex);
+    exch(array, right, storeIndex);
 
     return storeIndex;
   }
@@ -446,6 +502,7 @@ Array.prototype.quickSort=function(){
 }
 
 Array.prototype.selectionSort = function() {
+    this.procedures=[]
     var compare = 0
     var exchange = 0
     var comparet = this.length * (this.length - 1) / 2
@@ -455,7 +512,7 @@ Array.prototype.selectionSort = function() {
         var min = i
         for (var j = i + 1; j < this.length; j++) {
             compare++
-            if (less(this[j], this[min])) {
+            if (less(this, j, min)) {
                 min = j
             }
         }
@@ -480,7 +537,7 @@ Array.prototype.shellSort2 = function() {
         for (var i = h; i < l; i++) {
             for (var j = i; j >= h; j -= h) {
                 compare++
-                if (less(this[j], this[j - h])) {
+                if (less(this,j, j - h)) {
                     exch(this, j, j - h)
                     exchange++
                 } else {
@@ -498,6 +555,7 @@ Array.prototype.shellSort2 = function() {
 }
 
 Array.prototype.shellSort = function() {
+        this.procedures=[]
     var l = this.length
     var compare = 0
     var exchange = 0
@@ -515,7 +573,7 @@ Array.prototype.shellSort = function() {
         for (var i = h; i < l; i++) {
             for (var j = i; j >= h; j -= h) {
                 compare++
-                if (less(this[j], this[j - h])) {
+                if (less(this, j, j - h)) {
                     exch(this, j, j - h)
                     exchange++
                 } else {

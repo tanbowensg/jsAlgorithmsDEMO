@@ -1,4 +1,5 @@
 Array.prototype.insertationSort = function() {
+    this.procedures=[]
     var compare = 0
     var exchange = 0
     var comparet = this.length * this.length / 4
@@ -6,7 +7,7 @@ Array.prototype.insertationSort = function() {
     for (var i = 1; i < this.length; i++) {
         for (var j = i; j > 0; j--) {
             compare++
-            if (less(this[j], this[j - 1])) {
+            if (less(this, j, j - 1)) {
                 exch(this, j, j - 1)
                 exchange++
             } else {

@@ -10,7 +10,7 @@ Array.prototype.shellSort2 = function() {
         for (var i = h; i < l; i++) {
             for (var j = i; j >= h; j -= h) {
                 compare++
-                if (less(this[j], this[j - h])) {
+                if (less(this,j, j - h)) {
                     exch(this, j, j - h)
                     exchange++
                 } else {
@@ -28,6 +28,7 @@ Array.prototype.shellSort2 = function() {
 }
 
 Array.prototype.shellSort = function() {
+        this.procedures=[]
     var l = this.length
     var compare = 0
     var exchange = 0
@@ -45,7 +46,7 @@ Array.prototype.shellSort = function() {
         for (var i = h; i < l; i++) {
             for (var j = i; j >= h; j -= h) {
                 compare++
-                if (less(this[j], this[j - h])) {
+                if (less(this, j, j - h)) {
                     exch(this, j, j - h)
                     exchange++
                 } else {

@@ -1,9 +1,9 @@
 $(function(){
     // theArray = generateArray(20, 20, 100, true)
-    theArray = [34,24,54,37,87,3,45,45,85,56,34,45,9,44,53,57,73,56,45,32,73,57,38,73,87,23,99,9,43]
+    theArray = [34,24,54,37,87,49,45,45,85,56,34,45,29,44,53,57,73,56,45,32,73,57,38,73,87,23,99,59,43]
     quickSorting = Sorting(theArray)
     quickSorting.array.quickSort()
-    theArray = [34,24,54,37,87,3,45,45,85,56,34,45,9,44,53,57,73,56,45,32,73,57,38,73,87,23,99,9,43]
+    theArray = generateArray(20,20,100,true)
     selectSorting = Sorting(theArray)
     selectSorting.array.selectionSort()
 
@@ -14,7 +14,7 @@ $(function(){
     // var insertationSorting=Sorting(theArray)
     // theArray.selectionSort()
     // var selectionSorting=Sorting(theArray)
-    Velocity.mock = 0.3
+    Velocity.mock = 3
 })
 
 var quickSorting,selectSorting
@@ -23,11 +23,19 @@ var generateArray = function(l, min, max, isInt) {
     var array = []
     var i;
     for (i = 0; i < l; i++) {
-        if (isInt) {
-            array[i] = parseInt(Math.random() * (max - min)) + min
-        } else {
-            array[i] = Math.random() * (max - min) + min
+        var num={
+            id:i,
+            val:0,
+            valueOf:function(){
+                return this.id
+            }
         }
+        if (isInt) {
+            num.val = parseInt(Math.random() * (max - min)) + min
+        } else {
+            num.val = Math.random() * (max - min) + min
+        }
+        array.push(num)
     }
     return array
 }
@@ -41,7 +49,7 @@ var Sorting = function (array) {
 
     obj.generateBalls = function(max, d) {
         for (var i = 0; i < obj.array.length; i++) {
-            var diameter = obj.array[i] / max * d
+            var diameter = obj.array[i].val / max * d
             $("<div></div>").addClass("ball")
                 .html(i)
                 //方条
@@ -86,9 +94,10 @@ var Sorting = function (array) {
     }
 
     obj.perform = function(step) {
-        var a = obj.array.procedures[step].a
-        var b = obj.array.procedures[step].b
-        var type = obj.array.procedures[step].type
+        var procedure=obj.array.procedures[step]
+        var a = procedure.a
+        var b = procedure.b
+        var type = procedure.type
         var $a = $(obj.container.find(".ball-box")[a])
         var $b = $(obj.container.find(".ball-box")[b])
 
@@ -96,11 +105,17 @@ var Sorting = function (array) {
         console.log(a, $a.css('left'))
         console.log(b, $b.css('left'))
 
+        if (procedure.settled==="a"){
+            $a.css({color:"blue"})
+        } else if (procedure.settled==="b"){
+            $b.css({color:"blue"})
+        }
+
         if (a === b) {
             console.log("same")
             nextStep()
             return
-        }
+        } 
 
         if (type==="exch") {
             //元素交换
@@ -132,7 +147,7 @@ var Sorting = function (array) {
 
         function nextStep() {
             step++
-            if (step < obj.array.procedures.length) { //这里的回调和数组顺序有问题，是正常的反向，所以导致下面要用shift
+            if (step < obj.array.procedures.length) {
                 obj.perform(step)
             }
         }
@@ -208,7 +223,7 @@ function less(a, i, j) {
     //     b:j,
     //     type:"compare"
     // })
-    if (a[i] < a[j]) {
+    if (a[i].val < a[j].val) {
         return true
     } else {
         return false
@@ -216,14 +231,15 @@ function less(a, i, j) {
 }
 
 function exch(a, i, j) {
+    a.procedures.push({
+        a:a[i].id,
+        b:a[j].id,
+        type:"exch",
+        settled:"b"
+    })
     var t = a[i]
     a[i] = a[j]
     a[j] = t
-    a.procedures.unshift({
-        a:i,
-        b:j,
-        type:"exch",
-    })
 }
 
 function virtualize(a, point) {

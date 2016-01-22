@@ -1,20 +1,22 @@
 $(function(){
-    // theArray = generateArray(20, 20, 100, true)
-    theArray = [34,24,54,37,87,49,45,45,85,56,34,45,29,44,53,57,73,56,45,32,73,57,38,73,87,23,99,59,43]
+    theArray = generateArray(20, 20, 100, true)
+    // theArray = [34,24,54,37,87,49,45,45,85,56,34,45,29,44,53,57,73,56,45,32,73,57,38,73,87,23,99,59,43]
     quickSorting = Sorting(theArray)
     quickSorting.array.quickSort()
-    theArray = generateArray(20,20,100,true)
-    selectSorting = Sorting(theArray)
-    selectSorting.array.selectionSort()
 
-    // var QuickSorting=Sorting(theArray)
-    // theArray.shellSort()
-    // var shellSorting=Sorting(theArray)
-    // theArray.insertationSort()
-    // var insertationSorting=Sorting(theArray)
-    // theArray.selectionSort()
-    // var selectionSorting=Sorting(theArray)
-    Velocity.mock = 3
+    // theArray = generateArray(20,20,100,true)
+    // selectSorting = Sorting(theArray)
+    // selectSorting.array.selectionSort()
+
+    // theArray = generateArray(20,20,100,true)
+    // shellSorting = Sorting(theArray)
+    // shellSorting.array.shellSort()
+
+    // theArray = generateArray(20,20,100,true)
+    // insertationSorting = Sorting(theArray)
+    // insertationSorting.array.insertationSort()
+
+    Velocity.mock = 0.3
 })
 
 var quickSorting,selectSorting
@@ -53,30 +55,30 @@ var Sorting = function (array) {
             $("<div></div>").addClass("ball")
                 .html(i)
                 //方条
-                .css({
-                    width: "20px",
-                    height: diameter + "px",
-                    top: (d - diameter) + "px",
-                })
-                .appendTo($("<div class='ball-box'></div>")
-                    .css({
-                        left: 20 * i + "px",
-                    })
-                    .appendTo(obj.container)
-                )
-                //圆形
                 // .css({
-                //     width: diameter + "px",
+                //     width: "20px",
                 //     height: diameter + "px",
-                //     top: (d - diameter) / 2 + "px",
-                //     "border-radius": diameter / 2 + "px",
+                //     top: (d - diameter) + "px",
                 // })
                 // .appendTo($("<div class='ball-box'></div>")
                 //     .css({
-                //         left: 100 * i + "px",
+                //         left: 20 * i + "px",
                 //     })
                 //     .appendTo(obj.container)
                 // )
+                //圆形
+                .css({
+                    width: diameter + "px",
+                    height: diameter + "px",
+                    top: (d - diameter) / 2 + "px",
+                    "border-radius": diameter / 2 + "px",
+                })
+                .appendTo($("<div class='ball-box'></div>")
+                    .css({
+                        left: 100 * i + "px",
+                    })
+                    .appendTo(obj.container)
+                )
         }
     }
 

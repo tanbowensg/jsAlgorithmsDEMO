@@ -1,8 +1,8 @@
 var gulp=require("gulp")
 var concat=require("gulp-concat")
-var sass = require("gulp-sass")
+// var sass = require("gulp-sass")
 
-gulp.task("build", function() {
+gulp.task("js", function() {
     return gulp.src(["./src/js/sort/*.js","./src/js/sort/lib.js"])
 	    .pipe(concat("algorithms.js"))
 	    .pipe(gulp.dest("./"))
@@ -14,8 +14,8 @@ gulp.task("sass", function() {
 	    .pipe(gulp.dest("./"))
 })
 
-gulp.task("default",function(){
-	gulp.watch("./src/js/sort/*.js",['build'])
-	gulp.watch("./src/style/*.scss",['sass'])
+gulp.task("default",['js'],function(){
+	gulp.watch("./src/js/sort/*.js",['js'])
+	// gulp.watch("./src/style/*.scss",['sass'])
 	console.log('start watch!')
 })

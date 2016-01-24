@@ -10,7 +10,7 @@ Array.prototype.shellSort2 = function() {
         for (var i = h; i < l; i++) {
             for (var j = i; j >= h; j -= h) {
                 compare++
-                if (less(this,j, j - h)) {
+                if (less(this, j, j - h)) {
                     exch(this, j, j - h)
                     exchange++
                 } else {
@@ -28,15 +28,15 @@ Array.prototype.shellSort2 = function() {
 }
 
 Array.prototype.shellSort = function() {
-        this.procedures=[]
+    this.procedures = []
     var l = this.length
     var compare = 0
     var exchange = 0
     var comparet = Math.sqrt(l * l * l)
     var exchanget = '?'
-    //一个神奇的递增序列
-    var list=[0,1,5,19,41,109,209,505,929,2161,3905,8929,16001,36289,64769,146305,260609]
-    var listnum=1
+        //一个神奇的递增序列
+    var list = [0, 1, 5, 19, 41, 109, 209, 505, 929, 2161, 3905, 8929, 16001, 36289, 64769, 146305, 260609]
+    var listnum = 1
     var h = 1
     while (h < l / 2) {
         listnum++
@@ -46,8 +46,8 @@ Array.prototype.shellSort = function() {
         for (var i = h; i < l; i++) {
             for (var j = i; j >= h; j -= h) {
                 compare++
-                if (less(this, j, j - h)) {
-                    exch(this, j, j - h)
+                if (this.less(j, j - h)) {
+                    this.exch(j, j - h)
                     exchange++
                 } else {
                     break

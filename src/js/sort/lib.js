@@ -1,34 +1,34 @@
-$(function(){
+$(function() {
+    // theArray = [654,3,768,34,32,57,8,57,765,7867,8,45,346,24,6,475,65]
     theArray = generateArray(20, 20, 100, true)
-    // theArray = [34,24,54,37,87,49,45,45,85,56,34,45,29,44,53,57,73,56,45,32,73,57,38,73,87,23,99,59,43]
-    quickSorting = Sorting(theArray)
-    quickSorting.array.quickSort()
+    quick = Sorting(theArray)
+    quick.array.quick()
 
-    // theArray = generateArray(20,20,100,true)
-    // selectSorting = Sorting(theArray)
-    // selectSorting.array.selectionSort()
+    theArray = generateArray(20, 20, 100, true)
+    select = Sorting(theArray)
+    select.array.selectionSort()
 
-    // theArray = generateArray(20,20,100,true)
-    // shellSorting = Sorting(theArray)
-    // shellSorting.array.shellSort()
+    theArray = generateArray(20, 20, 100, true)
+    shell = Sorting(theArray)
+    shell.array.shellSort()
 
-    // theArray = generateArray(20,20,100,true)
-    // insertationSorting = Sorting(theArray)
-    // insertationSorting.array.insertationSort()
+    theArray = generateArray(20, 20, 100, true)
+    insert = Sorting(theArray)
+    insert.array.insertationSort()
 
-    Velocity.mock = 0.3
+    Velocity.mock = 1
 })
 
-var quickSorting,selectSorting
+var shell, insert, quick, select
 
 var generateArray = function(l, min, max, isInt) {
     var array = []
     var i;
     for (i = 0; i < l; i++) {
-        var num={
-            id:i,
-            val:0,
-            valueOf:function(){
+        var num = {
+            id: i,
+            val: 0,
+            valueOf: function() {
                 return this.id
             }
         }
@@ -42,10 +42,10 @@ var generateArray = function(l, min, max, isInt) {
     return array
 }
 
-var Sorting = function (array) {
+var Sorting = function(array) {
     var obj = {}
 
-    obj.array=array
+    obj.array = array
 
     obj.container = $("<div></div>").addClass("animate").appendTo(document.body)
 
@@ -96,7 +96,7 @@ var Sorting = function (array) {
     }
 
     obj.perform = function(step) {
-        var procedure=obj.array.procedures[step]
+        var procedure = obj.array.procedures[step]
         var a = procedure.a
         var b = procedure.b
         var type = procedure.type
@@ -107,19 +107,23 @@ var Sorting = function (array) {
         console.log(a, $a.css('left'))
         console.log(b, $b.css('left'))
 
-        if (procedure.settled==="a"){
-            $a.css({color:"blue"})
-        } else if (procedure.settled==="b"){
-            $b.css({color:"blue"})
+        if (procedure.settled === "a") {
+            $a.css({
+                color: "blue"
+            })
+        } else if (procedure.settled === "b") {
+            $b.css({
+                color: "blue"
+            })
         }
 
         if (a === b) {
             console.log("same")
             nextStep()
             return
-        } 
+        }
 
-        if (type==="exch") {
+        if (type === "exch") {
             //元素交换
             Velocity($a, {
                 left: $b.css('left')
@@ -130,19 +134,19 @@ var Sorting = function (array) {
                 complete: nextStep
             })
 
-        } else if (type==="compare"){
+        } else if (type === "compare") {
             //元素比较
             Velocity($a, {
                 top: "-=10px"
             }, {
-                duration:100,
-                loop:1,
+                duration: 100,
+                loop: 1,
             })
 
             Velocity($b, {
                 top: "-=10px"
             }, {
-                duration:100,
+                duration: 100,
                 complete: nextStep
             })
         }
@@ -159,8 +163,8 @@ var Sorting = function (array) {
         obj.perform(0)
     }
 
-    obj.init = function(){
-        obj.generateBalls(100,100)
+    obj.init = function() {
+        obj.generateBalls(100, 100)
     }
 
     obj.init()
@@ -219,30 +223,70 @@ var Sorting = function (array) {
 // }
 
 
-function less(a, i, j) {
-    // sorting.procedures.unshift({
-    //     a:i,
-    //     b:j,
-    //     type:"compare"
-    // })
-    if (a[i].val < a[j].val) {
+Array.prototype.exch = function(i, j, settled) {
+
+    if (settled) {
+        if (settled === i) {
+            settled = "a"
+        }
+        if (settled === j) {
+            settled = "b"
+        }
+    }
+
+    this.procedures.push({
+        a: this[i].id,
+        b: this[j].id,
+        type: "exch",
+        settled: settled || ''
+    })
+    var t = this[i]
+    this[i] = this[j]
+    this[j] = t
+}
+
+Array.prototype.less = function(i, j) {
+    // if (this[i] < this[j]) {
+    if (this[i].val < this[j].val) {
         return true
     } else {
         return false
     }
 }
 
-function exch(a, i, j) {
-    a.procedures.push({
-        a:a[i].id,
-        b:a[j].id,
-        type:"exch",
-        settled:"b"
-    })
-    var t = a[i]
-    a[i] = a[j]
-    a[j] = t
+Array.prototype.more = function(i, j) {
+    if (this[i] > this[j]) {
+        // if (this[i].val < this[j].val) {
+        return true
+    } else {
+        return false
+    }
 }
+
+// function less(a, i, j) {
+//     // sorting.procedures.unshift({
+//     //     a:i,
+//     //     b:j,
+//     //     type:"compare"
+//     // })
+//     if (a[i].val < a[j].val) {
+//         return true
+//     } else {
+//         return false
+//     }
+// }
+
+// function exch(a, i, j) {
+//     a.procedures.push({
+//         a:a[i].id,
+//         b:a[j].id,
+//         type:"exch",
+//         settled:"b"
+//     })
+//     var t = a[i]
+//     a[i] = a[j]
+//     a[j] = t
+// }
 
 function virtualize(a, point) {
     var color, i

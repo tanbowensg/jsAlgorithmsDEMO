@@ -7,8 +7,8 @@ Array.prototype.insertationSort = function() {
     for (var i = 1; i < this.length; i++) {
         for (var j = i; j > 0; j--) {
             compare++
-            if (less(this, j, j - 1)) {
-                exch(this, j, j - 1)
+            if (this.less(j, j - 1)) {
+                this.exch(j, j - 1)
                 exchange++
             } else {
                 break

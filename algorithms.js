@@ -7,8 +7,8 @@ Array.prototype.insertationSort = function() {
     for (var i = 1; i < this.length; i++) {
         for (var j = i; j > 0; j--) {
             compare++
-            if (less(this, j, j - 1)) {
-                exch(this, j, j - 1)
+            if (this.less(j, j - 1)) {
+                this.exch(j, j - 1)
                 exchange++
             } else {
                 break
@@ -20,37 +20,37 @@ Array.prototype.insertationSort = function() {
     console.log('理论上应进行约' + comparet + '次比较和' + exchanget + '次交换')
     console.log('实际上进行了共' + compare + '次比较和' + exchange + '次交换')
 }
-$(function(){
+$(function() {
+    // theArray = [654,3,768,34,32,57,8,57,765,7867,8,45,346,24,6,475,65]
     theArray = generateArray(20, 20, 100, true)
-    // theArray = [34,24,54,37,87,49,45,45,85,56,34,45,29,44,53,57,73,56,45,32,73,57,38,73,87,23,99,59,43]
-    quickSorting = Sorting(theArray)
-    quickSorting.array.quickSort()
+    quick = Sorting(theArray)
+    quick.array.quick()
 
-    // theArray = generateArray(20,20,100,true)
-    // selectSorting = Sorting(theArray)
-    // selectSorting.array.selectionSort()
+    theArray = generateArray(20, 20, 100, true)
+    select = Sorting(theArray)
+    select.array.selectionSort()
 
-    // theArray = generateArray(20,20,100,true)
-    // shellSorting = Sorting(theArray)
-    // shellSorting.array.shellSort()
+    theArray = generateArray(20, 20, 100, true)
+    shell = Sorting(theArray)
+    shell.array.shellSort()
 
-    // theArray = generateArray(20,20,100,true)
-    // insertationSorting = Sorting(theArray)
-    // insertationSorting.array.insertationSort()
+    theArray = generateArray(20, 20, 100, true)
+    insert = Sorting(theArray)
+    insert.array.insertationSort()
 
-    Velocity.mock = 0.3
+    Velocity.mock = 1
 })
 
-var quickSorting,selectSorting
+var shell, insert, quick, select
 
 var generateArray = function(l, min, max, isInt) {
     var array = []
     var i;
     for (i = 0; i < l; i++) {
-        var num={
-            id:i,
-            val:0,
-            valueOf:function(){
+        var num = {
+            id: i,
+            val: 0,
+            valueOf: function() {
                 return this.id
             }
         }
@@ -64,10 +64,10 @@ var generateArray = function(l, min, max, isInt) {
     return array
 }
 
-var Sorting = function (array) {
+var Sorting = function(array) {
     var obj = {}
 
-    obj.array=array
+    obj.array = array
 
     obj.container = $("<div></div>").addClass("animate").appendTo(document.body)
 
@@ -118,7 +118,7 @@ var Sorting = function (array) {
     }
 
     obj.perform = function(step) {
-        var procedure=obj.array.procedures[step]
+        var procedure = obj.array.procedures[step]
         var a = procedure.a
         var b = procedure.b
         var type = procedure.type
@@ -129,19 +129,23 @@ var Sorting = function (array) {
         console.log(a, $a.css('left'))
         console.log(b, $b.css('left'))
 
-        if (procedure.settled==="a"){
-            $a.css({color:"blue"})
-        } else if (procedure.settled==="b"){
-            $b.css({color:"blue"})
+        if (procedure.settled === "a") {
+            $a.css({
+                color: "blue"
+            })
+        } else if (procedure.settled === "b") {
+            $b.css({
+                color: "blue"
+            })
         }
 
         if (a === b) {
             console.log("same")
             nextStep()
             return
-        } 
+        }
 
-        if (type==="exch") {
+        if (type === "exch") {
             //元素交换
             Velocity($a, {
                 left: $b.css('left')
@@ -152,19 +156,19 @@ var Sorting = function (array) {
                 complete: nextStep
             })
 
-        } else if (type==="compare"){
+        } else if (type === "compare") {
             //元素比较
             Velocity($a, {
                 top: "-=10px"
             }, {
-                duration:100,
-                loop:1,
+                duration: 100,
+                loop: 1,
             })
 
             Velocity($b, {
                 top: "-=10px"
             }, {
-                duration:100,
+                duration: 100,
                 complete: nextStep
             })
         }
@@ -181,8 +185,8 @@ var Sorting = function (array) {
         obj.perform(0)
     }
 
-    obj.init = function(){
-        obj.generateBalls(100,100)
+    obj.init = function() {
+        obj.generateBalls(100, 100)
     }
 
     obj.init()
@@ -241,30 +245,70 @@ var Sorting = function (array) {
 // }
 
 
-function less(a, i, j) {
-    // sorting.procedures.unshift({
-    //     a:i,
-    //     b:j,
-    //     type:"compare"
-    // })
-    if (a[i].val < a[j].val) {
+Array.prototype.exch = function(i, j, settled) {
+
+    if (settled) {
+        if (settled === i) {
+            settled = "a"
+        }
+        if (settled === j) {
+            settled = "b"
+        }
+    }
+
+    this.procedures.push({
+        a: this[i].id,
+        b: this[j].id,
+        type: "exch",
+        settled: settled || ''
+    })
+    var t = this[i]
+    this[i] = this[j]
+    this[j] = t
+}
+
+Array.prototype.less = function(i, j) {
+    // if (this[i] < this[j]) {
+    if (this[i].val < this[j].val) {
         return true
     } else {
         return false
     }
 }
 
-function exch(a, i, j) {
-    a.procedures.push({
-        a:a[i].id,
-        b:a[j].id,
-        type:"exch",
-        settled:"b"
-    })
-    var t = a[i]
-    a[i] = a[j]
-    a[j] = t
+Array.prototype.more = function(i, j) {
+    if (this[i] > this[j]) {
+        // if (this[i].val < this[j].val) {
+        return true
+    } else {
+        return false
+    }
 }
+
+// function less(a, i, j) {
+//     // sorting.procedures.unshift({
+//     //     a:i,
+//     //     b:j,
+//     //     type:"compare"
+//     // })
+//     if (a[i].val < a[j].val) {
+//         return true
+//     } else {
+//         return false
+//     }
+// }
+
+// function exch(a, i, j) {
+//     a.procedures.push({
+//         a:a[i].id,
+//         b:a[j].id,
+//         type:"exch",
+//         settled:"b"
+//     })
+//     var t = a[i]
+//     a[i] = a[j]
+//     a[j] = t
+// }
 
 function virtualize(a, point) {
     var color, i
@@ -426,99 +470,155 @@ Array.prototype.mergeSort = function() {
 //     this.splice(0,this.length,newArray)
 //     console.log(this)
 // }
-Array.prototype.quickSort=function(){
-  this.procedures=[]
-  /**
-   * Swaps two values in the heap
-   *
-   * @param {int} indexA Index of the first item to be swapped
-   * @param {int} indexB Index of the second item to be swapped
-   */
-  // function swap(array, indexA, indexB) {
-  //   var temp = array[indexA];
-  //   array[indexA] = array[indexB];
-  //   array[indexB] = temp;
-  // }
+// Array.prototype.quickSort=function(){
+//   this.procedures=[]
+//   /**
+//    * Swaps two values in the heap
+//    *
+//    * @param {int} indexA Index of the first item to be swapped
+//    * @param {int} indexB Index of the second item to be swapped
+//    */
+//   // function swap(array, indexA, indexB) {
+//   //   var temp = array[indexA];
+//   //   array[indexA] = array[indexB];
+//   //   array[indexB] = temp;
+//   // }
 
-  /**
-   * Partitions the (sub)array into values less than and greater
-   * than the pivot value
-   *
-   * @param {Array} array The target array
-   * @param {int} pivot The index of the pivot
-   * @param {int} left The index of the leftmost element
-   * @param {int} left The index of the rightmost element
-   */
-  function partition(array, pivot, left, right) {
+//   /**
+//    * Partitions the (sub)array into values less than and greater
+//    * than the pivot value
+//    *
+//    * @param {Array} array The target array
+//    * @param {int} pivot The index of the pivot
+//    * @param {int} left The index of the leftmost element
+//    * @param {int} left The index of the rightmost element
+//    */
+//   function partition(array, pivot, left, right) {
 
-    var storeIndex = left,
-        pivotValue = array[pivot];
+//     var storeIndex = left,
+//         pivotValue = array[pivot];
 
-    // put the pivot on the right
-    exch(array, pivot, right);
+//     // put the pivot on the right
+//     this.exch(pivot, right);
 
-    // go through the rest
-    for(var v = left; v < right; v++) {
+//     // go through the rest
+//     for(var v = left; v < right; v++) {
 
-      // if the value is less than the pivot's
-      // value put it to the left of the pivot
-      // point and move the pivot point along one
-      if(array[v] < pivotValue) {
-        exch(array, v, storeIndex);
-        storeIndex++;
+//       // if the value is less than the pivot's
+//       // value put it to the left of the pivot
+//       // point and move the pivot point along one
+//       if(array[v] < pivotValue) {
+//         this.exch(v, storeIndex);
+//         storeIndex++;
+//       }
+//     }
+
+//     // finally put the pivot in the correct place
+//     this.exch(right, storeIndex);
+
+//     return storeIndex;
+//   }
+
+//   /**
+//    * Sorts the (sub-)array
+//    *
+//    * @param {Array} array The target array
+//    * @param {int} left The index of the leftmost element, defaults 0
+//    * @param {int} left The index of the rightmost element,
+//    defaults array.length-1
+//    */
+//   function sort(array, left, right) {
+
+//     var pivot = null;
+
+//     if(typeof left !== 'number') {
+//       left = 0;
+//     }
+
+//     if(typeof right !== 'number') {
+//       right = array.length - 1;
+//     }
+
+//     // effectively set our base
+//     // case here. When left == right
+//     // we'll stop
+//     if(left < right) {
+
+//       // pick a pivot between left and right
+//       // and update it once we've partitioned
+//       // the array to values < than or > than
+//       // the pivot value
+//       pivot     = left + Math.ceil((right - left) * 0.5);
+//       newPivot  = partition(array, pivot, left, right);
+
+//       // recursively sort to the left and right
+//       sort(array, left, newPivot - 1);
+//       sort(array, newPivot + 1, right);
+//     }
+
+//   }
+
+//   sort(this)
+// }
+
+Array.prototype.quick = function() {
+
+  var that = this
+  this.procedures = []
+
+  function cut(left, right) {
+    var mid = left
+    var i = left
+    var j = right
+    while (i < j) {
+      for (i; i < right + 1; i++) {
+        // if(that.more(i,mid)){//降序
+        if (that.less(mid, i)) { //升序
+          break
+        }
       }
+
+      for (j; j > left; j--) {
+        // if(that.more(mid,j)){//降序
+        if (that.less(j, mid)) { //升序
+          break
+        }
+      }
+
+      if (i >= j) {
+        break
+      }
+
+      that.exch(i, j)
     }
-
-    // finally put the pivot in the correct place
-    exch(array, right, storeIndex);
-
-    return storeIndex;
+    that.exch(left, j, left)
+    return j
   }
 
-  /**
-   * Sorts the (sub-)array
-   *
-   * @param {Array} array The target array
-   * @param {int} left The index of the leftmost element, defaults 0
-   * @param {int} left The index of the rightmost element,
-   defaults array.length-1
-   */
-  function sort(array, left, right) {
+  function sort(left, right) {
 
-    var pivot = null;
-
-    if(typeof left !== 'number') {
-      left = 0;
+    if (typeof(left) !== "number") {
+      left = 0
     }
 
-    if(typeof right !== 'number') {
-      right = array.length - 1;
+    if (typeof(right) !== "number") {
+      right = that.length - 1
     }
 
-    // effectively set our base
-    // case here. When left == right
-    // we'll stop
-    if(left < right) {
-
-      // pick a pivot between left and right
-      // and update it once we've partitioned
-      // the array to values < than or > than
-      // the pivot value
-      pivot     = left + Math.ceil((right - left) * 0.5);
-      newPivot  = partition(array, pivot, left, right);
-
-      // recursively sort to the left and right
-      sort(array, left, newPivot - 1);
-      sort(array, newPivot + 1, right);
+    if (right <= left) {
+      return
     }
 
+    var mid = cut(left, right)
+
+    sort(left, mid - 1)
+    sort(mid + 1, right)
   }
 
-  sort(this)
+  sort(0, that.length - 1)
 }
-
 Array.prototype.selectionSort = function() {
-    this.procedures=[]
+    this.procedures = []
     var compare = 0
     var exchange = 0
     var comparet = this.length * (this.length - 1) / 2
@@ -528,11 +628,11 @@ Array.prototype.selectionSort = function() {
         var min = i
         for (var j = i + 1; j < this.length; j++) {
             compare++
-            if (less(this, j, min)) {
+            if (this.less(j, min)) {
                 min = j
             }
         }
-        exch(this, i, min)
+        this.exch(i, min, min)
         exchange++
         // virtualize(this, i)
     }
@@ -553,7 +653,7 @@ Array.prototype.shellSort2 = function() {
         for (var i = h; i < l; i++) {
             for (var j = i; j >= h; j -= h) {
                 compare++
-                if (less(this,j, j - h)) {
+                if (less(this, j, j - h)) {
                     exch(this, j, j - h)
                     exchange++
                 } else {
@@ -571,15 +671,15 @@ Array.prototype.shellSort2 = function() {
 }
 
 Array.prototype.shellSort = function() {
-        this.procedures=[]
+    this.procedures = []
     var l = this.length
     var compare = 0
     var exchange = 0
     var comparet = Math.sqrt(l * l * l)
     var exchanget = '?'
-    //一个神奇的递增序列
-    var list=[0,1,5,19,41,109,209,505,929,2161,3905,8929,16001,36289,64769,146305,260609]
-    var listnum=1
+        //一个神奇的递增序列
+    var list = [0, 1, 5, 19, 41, 109, 209, 505, 929, 2161, 3905, 8929, 16001, 36289, 64769, 146305, 260609]
+    var listnum = 1
     var h = 1
     while (h < l / 2) {
         listnum++
@@ -589,8 +689,8 @@ Array.prototype.shellSort = function() {
         for (var i = h; i < l; i++) {
             for (var j = i; j >= h; j -= h) {
                 compare++
-                if (less(this, j, j - h)) {
-                    exch(this, j, j - h)
+                if (this.less(j, j - h)) {
+                    this.exch(j, j - h)
                     exchange++
                 } else {
                     break

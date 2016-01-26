@@ -129,19 +129,14 @@ var Sorting = function(array) {
         console.log(a, $a.css('left'))
         console.log(b, $b.css('left'))
 
-        if (procedure.settled === "a") {
-            $a.css({
-                color: "blue"
-            })
-        } else if (procedure.settled === "b") {
-            $b.css({
-                color: "blue"
-            })
-        }
-
         if (a === b) {
             console.log("same")
             nextStep()
+            if (procedure.settled === "a") {
+                $a.addClass('settled')
+            } else if (procedure.settled === "b") {
+                $b.addClass('settled')
+            }
             return
         }
 
@@ -171,6 +166,12 @@ var Sorting = function(array) {
                 duration: 100,
                 complete: nextStep
             })
+        }
+
+        if (procedure.settled === "a") {
+            $a.addClass('settled')
+        } else if (procedure.settled === "b") {
+            $b.addClass('settled')
         }
 
         function nextStep() {

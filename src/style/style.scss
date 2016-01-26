@@ -1,3 +1,7 @@
+body{
+	background:black
+}
+
 .colDiv{
 	width: 600px;
 	height:150px;
@@ -31,9 +35,9 @@
 	display: inline-block;
 	vertical-align: middle;
 	position: relative;
-	background: red;
+	background: gray;
 }
 
 .ball-box.settled .ball{
-	background: blue;
+	background: white;
 }
